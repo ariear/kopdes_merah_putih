@@ -2,7 +2,7 @@ import psycopg
 from psycopg.rows import dict_row
 
 # 1. Konfigurasi Koneksi Database
-DB_PARAMS = "dbname=kopdes user=postgres password=tIdakIngat host=localhost port=5432"
+DB_PARAMS = "dbname=kopdes user=postgres password= host=localhost port=5432"
 
 
 def get_db_connection():
