@@ -4,21 +4,6 @@ from psycopg.rows import dict_row
 from pydantic import BaseModel
 from typing import List, Generator
 
-# select_product_query = """
-#         SELECT quantity FROM products
-#         WHERE id = %s;
-#     """
-#     cur.execute(select_product_query, (datas.productId,))
-#             remaining = cur.fetchone
-#             if remaining < datas.quantity:
-#                 return 
-
-# insert_query = """
-#         INSERT INTO usedVouchers (user_id, voucher_id)
-#         VALUES (%s, %s)
-#     """
-#     cur.execute(insert_query, (datas.userId, voucher["id"]))
-
 app = FastAPI(title="Product CRUD API dengan FastAPI & Psycopg 3")
 
 # 1. Konfigurasi Koneksi Database
@@ -81,8 +66,7 @@ def get_user(id, conn: psycopg.Connection = Depends(get_db)):
             cur.execute(query)
             return cur.fetchall()[0]
     except Exception as e:
-        print(f"❌ Gagal user, Error: {e}")
-        return None
+        return HTTPException(status_code=500, detail=f"User Not Found: {e}")
     
 # --- R - READ: Ambil Semua Produk ---
 @app.get("/products", response_model=List[ProductResponse])
@@ -124,7 +108,6 @@ def add_product_to_cart(datas: CartAddProduct, conn: psycopg.Connection = Depend
             res = cur.fetchone()
             cur.execute(select_product_query, (datas.productId,))
             product = cur.fetchone()
-            print(res)
             if res==None:
                 if (product["available_amount"]<datas.quantity):
                     return {"Status":"Failed", "Message": "Gagal Menambahkan Produk, Jumlah Produk yang Tersedia Tidak Mencukupi"}
@@ -271,8 +254,6 @@ def payment_handle( datas: Payment, conn: psycopg.Connection = Depends(get_db)):
             # Do Discount
             cur.execute(vouchers_query, (datas.voucherNames, datas.userId))
             vouchers = cur.fetchall()
-            print(vouchers)
-            print(", ".join(datas.voucherNames))
             cashback = 0
             for voucher in vouchers:
                 total, cashback_amount = handle_voucher(total_price=total,
@@ -286,7 +267,6 @@ def payment_handle( datas: Payment, conn: psycopg.Connection = Depends(get_db)):
             
             user["balance"]+=cashback
             
-            print([(datas.userId, vouchers[i]["id"]) for i in range(len(vouchers))])
             cur.executemany(used_vouchers_insert,
                             [(datas.userId, vouchers[i]["id"]) for i in range(len(vouchers))]
                             )
@@ -299,5 +279,4 @@ def payment_handle( datas: Payment, conn: psycopg.Connection = Depends(get_db)):
             conn.commit()
             return {"Status":"Success", "Message":"Keranjang Anda Berhasil Dibayar"}
     except Exception as e:
-        print(str(e))
         raise HTTPException(status_code=500, detail=f"Gagal membayar: {str(e)}")
