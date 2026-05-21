@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Control Flow Graph</title>
+    <script type="text/javascript" src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+    <style>
+        body {
+            margin: 0;
+            background-color: #222222;
+            color: white;
+            font-family: Arial, sans-serif;
+        }
+        h2 {
+            text-align: center;
+            margin-top: 20px;
+        }
+        /* Wadah untuk menampung grafik */
+        #cfg-container {
+            width: 90vw;
+            height: 75vh;
+            border: 1px solid #444444;
+            background-color: #1e1e1e;
+            margin: 20px auto;
+            border-radius: 8px;
+        }
+    </style>
+</head>
+<body>
+
+    <h2>Control Flow Graph Viewer</h2>
+    <div id="cfg-container"></div>
+
+    <script>
+        // 1. Ambil data dari file JSON yang dibuat oleh Python
+        // Ganti 'cfg_data.json' dengan nama file JSON Anda yang sebenarnya (misal: cfg_login.json)
+fetch('http://127.0.0.1:5500/cfg_payment_handle.json')
+    .then(response => response.json())
+    .then(jsonData => {
+        
+        // Memetakan nodes (Sudah benar karena JSON Anda memakai nama "nodes")
+        const nodes = jsonData.nodes.map(node => {
+            return { 
+                id: node.id, 
+                label: node.id, 
+                shape: 'box',   
+                margin: 10
+            };
+        });
+
+        // PERBAIKAN DI SINI: Ubah 'links' menjadi 'edges'
+        const edges = jsonData.edges.map(edge => {
+            return { 
+                from: edge.source, // Mengambil data 'source' dari JSON Anda
+                to: edge.target,   // Mengambil data 'target' dari JSON Anda
+                arrows: 'to'     
+            };
+        });
+
+        // Satukan data untuk diserahkan ke Vis.js
+        const data = {
+            nodes: new vis.DataSet(nodes),
+            edges: new vis.DataSet(edges)
+        };
+
+        // Konfigurasi tampilan grafis (samakan seperti kemarin)
+        const options = {
+            nodes: {
+                color: {
+                    background: '#4A90E2',
+                    border: '#2B6CB0',
+                    highlight: '#63B3ED'
+                },
+                font: { color: '#ffffff', size: 14, face: 'Courier New' }
+            },
+            edges: {
+                color: '#8B949E',
+                width: 2,
+                smooth: {
+                    type: 'cubicBezier',
+                    forceDirection: 'vertical'
+                }
+            },
+            physics: {
+                barnesHut: {
+                    gravitationalConstant: -4000, // Membuat gaya tolak sedikit lebih kuat agar makin renggang
+                    centralGravity: 0.3,
+                    springLength: 120,            
+                    springConstant: 0.04
+                }
+            }
+        };
+
+        // Render grafik ke dalam div HTML
+        const container = document.getElementById('cfg-container');
+        const network = new vis.Network(container, data, options);
+    })
+    .catch(error => {
+        console.error("Gagal memuat data CFG JSON:", error);
+    });
+    </script>
+</body>
+</html>
