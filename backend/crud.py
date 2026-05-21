@@ -2,7 +2,7 @@ import psycopg
 from psycopg.rows import dict_row
 
 # 1. Konfigurasi Koneksi Database
-DB_PARAMS = "dbname=kopdes user=postgres password= host=localhost port=5432"
+DB_PARAMS = "dbname=kopdes user=postgres password=tIdakIngat host=localhost port=5432"
 
 
 def get_db_connection():
@@ -10,6 +10,17 @@ def get_db_connection():
     # Menggunakan dict_row agar hasil SELECT berbentuk dictionary (bukan tuple)
     return psycopg.connect(DB_PARAMS, row_factory=dict_row)
 
+
+def get_all_products():
+    query = "SELECT * FROM Products;"
+    try:
+        with get_db_connection() as conn:
+            with conn.cursor() as cur:
+                cur.execute(query)
+                return cur.fetchall()
+    except Exception as e:
+        print(f"❌ Gagal mengambil semua produk: {e}")
+        return []
 
 # ==========================================
 # C - CREATE (Tambah Produk Baru)
@@ -37,16 +48,7 @@ def create_product(name, available_amount, price):
 # ==========================================
 # R - READ (Ambil Data Produk)
 # ==========================================
-def get_all_products():
-    query = "SELECT * FROM Products;"
-    try:
-        with get_db_connection() as conn:
-            with conn.cursor() as cur:
-                cur.execute(query)
-                return cur.fetchall()
-    except Exception as e:
-        print(f"❌ Gagal mengambil semua produk: {e}")
-        return []
+
 
 
 def get_product_by_id(product_id):

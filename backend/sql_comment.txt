@@ -1,0 +1,48 @@
+-- 1. Bikin tipe ENUM terlebih dahulu untuk kolom effect di tabel Vouchers
+CREATE TYPE voucher_effect AS ENUM ('FIXED_MINUS', 'PERCENTAGE_DISCOUNT', 'FIXED_CASHBACK');
+
+-- 2. Bikin tabel master yang tidak punya dependency (tidak punya foreign key)
+CREATE TABLE Users (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    is_member BOOLEAN NOT NULL,
+    balance FLOAT NOT NULL DEFAULT 0
+);
+
+CREATE TABLE Products (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    available_amount INTEGER NOT NULL,
+    price FLOAT NOT NULL,
+    description TEXT NOT NULL
+);
+
+CREATE TABLE Vouchers (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    effect voucher_effect NOT NULL, -- Menggunakan enum yang dibikin di atas
+    amount FLOAT NOT NULL
+);
+
+-- 3. Bikin tabel transaksi/relasi yang bergantung pada tabel master (punya foreign key)
+CREATE TABLE Carts (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    product_id INTEGER NOT NULL,
+    is_paid BOOLEAN NOT NULL DEFAULT false,
+    quantity INTEGER NOT NULL,
+    
+    -- Definisi Relasi (Foreign Key)
+    CONSTRAINT fk_carts_user FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_carts_product FOREIGN KEY (product_id) REFERENCES Products(id) ON DELETE CASCADE
+);
+
+CREATE TABLE UsedVouchers (
+    id SERIAL PRIMARY KEY,
+    user_id INTEGER NOT NULL,
+    voucher_id INTEGER NOT NULL,
+    
+    -- Definisi Relasi (Foreign Key)
+    CONSTRAINT fk_used_vouchers_user FOREIGN KEY (user_id) REFERENCES Users(id) ON DELETE CASCADE,
+    CONSTRAINT fk_used_vouchers_voucher FOREIGN KEY (voucher_id) REFERENCES Vouchers(id) ON DELETE CASCADE
+);
