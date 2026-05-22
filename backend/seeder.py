@@ -1,7 +1,7 @@
 import psycopg
 from psycopg.rows import dict_row
 
-DB_PARAMS = "dbname=kopdes user=postgres password=tIdakIngat host=localhost port=5432"
+DB_PARAMS = "dbname=kopdes user=postgres password=arie host=localhost port=5432"
 
 def get_db_connection():
     return psycopg.connect(DB_PARAMS, row_factory=dict_row)
@@ -12,11 +12,11 @@ def get_db_connection():
 def seed_database():
     """Fungsi seeding yang disesuaikan dengan skema Users, Products, dan Vouchers Anda"""
     
-    # 1. Data sesuai kolom: name, is_member, balance
+    # 1. Data sesuai kolom: name, username, password, is_member, balance
     users_data = [
-        ("Budi Santoso", True, 150000.0),
-        ("Siti Aminah", False, 0.0),
-        ("Andi Wijaya", True, 500000.0)
+        ("Budi Santoso", "budi", "password123", True, 150000.0),
+        ("Siti Aminah", "siti", "password123", False, 700000.0),
+        ("Andi Wijaya", "andi", "password123", True, 500000.0)
     ]
     
     # 2. Data sesuai kolom: name, available_amount, price
@@ -45,8 +45,8 @@ def seed_database():
                 
                 # Seeding Tabel Users
                 cur.executemany("""
-                    INSERT INTO Users (name, is_member, balance) 
-                    VALUES (%s, %s, %s)
+                    INSERT INTO Users (name, username, password, is_member, balance) 
+                    VALUES (%s, %s, %s, %s, %s)
                     ON CONFLICT DO NOTHING;
                 """, users_data)
                 print(" Data tabel Users berhasil diproses.")

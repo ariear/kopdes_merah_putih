@@ -389,3 +389,82 @@
 .home-btn {
   width: 100%;
 }
+.login-form {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.form-group {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.form-group label {
+  font-weight: bold;
+  font-size: 18px;
+}
+
+.login-btn {
+  margin-top: 10px;
+  background-color: var(--primary);
+  width: 100%;
+  font-size: 18px;
+}
+
+/* ---- Applied Vouchers Tags ---- */
+.applied-vouchers {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 12px;
+}
+
+.voucher-tag {
+  background-color: var(--secondary);
+  border: 2px solid var(--border-color);
+  padding: 4px 12px;
+  font-weight: bold;
+  font-size: 14px;
+}
+
+/* ---- Payment Detail (Checkout page) ---- */
+.payment-detail {
+  text-align: left;
+  margin-top: 20px;
+  border-top: 2px solid var(--border-color);
+  padding-top: 16px;
+}
+
+.detail-row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 17px;
+  margin-bottom: 10px;
+}
+
+.detail-row.discount {
+  color: var(--primary);
+  font-weight: bold;
+}
+
+.detail-row.cashback {
+  color: #008000;
+  font-weight: bold;
+}
+
+.detail-row.total {
+  font-size: 22px;
+  font-weight: 900;
+  padding-top: 12px;
+  margin-top: 4px;
+  border-top: 2px dashed var(--border-color);
+}
+
+.detail-row.balance {
+  font-size: 18px;
+  font-weight: bold;
+  color: #1a56db;
+  margin-top: 4px;
+}
